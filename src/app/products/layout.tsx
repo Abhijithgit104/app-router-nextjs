@@ -5,7 +5,6 @@ export default function ProductsLayout({children} : {
 }) {
   return (
     <div>
-        <h3>This is products related page</h3>
         {children}
     </div>
   )

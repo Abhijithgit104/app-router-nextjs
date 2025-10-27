@@ -1,18 +1,18 @@
-import React from 'react'
-import { ProductService } from '../services/products-services'
-import ProductCard from './product-card/ProductCard';
+import ProductCard from "./product-card/ProductCard";
+import styles from "../styles/product.module.css";
+
+ export async function getProducts() {
+  const res = await fetch("https://fakestoreapi.com/products", { cache: "no-store" });
+  return res.json();
+}
 
 export default async function ProductList() {
-    var products = await ProductService.getProducts();
+  const products = await getProducts();
   return (
-    <div className='d-flex flex-wrap gap-3'>
-        {
-            products.map((p:any) => {
-                return(
-                    <ProductCard key={p.id} product={p} />
-                )
-            })
-        }
+    <div className={styles.container}>
+      {products.map((p: any) => (
+        <ProductCard key={p.id} product={p} />
+      ))}
     </div>
-  )
+  );
 }

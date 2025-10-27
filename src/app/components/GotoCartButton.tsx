@@ -1,24 +1,27 @@
 "use client";
+import { CartContext } from "../context/CartContext";
+import { useContext } from "react";
 
-import { useRouter } from "next/navigation";
+export default function GotoCartButton({ product }: any) {
+  const { addToCart } = useContext(CartContext);
 
-export default function GotoCartButton() {
-  const router = useRouter();
+  const handleAdd = () => {
+    addToCart(product);
+    alert("✅ Added to Cart");
+  };
+
   return (
-    <div>
-      <button
-        className="btn btn-warning"
-        onClick={() => {
-          router.push("/carts");
-        }}
-      >
-        Go to Cart (push)
-      </button>
-      <button className="btn btn-danger"
-        onClick={() => {
-            router.replace('/carts')
-        }}>Go to Cart (replace)
-        </button>
-    </div>
+    <button
+      onClick={handleAdd}
+      style={{
+        padding: "10px 20px",
+        background: "#0070f3",
+        color: "white",
+        borderRadius: "6px",
+        marginTop: "10px",
+      }}
+    >
+      Add to Cart
+    </button>
   );
 }

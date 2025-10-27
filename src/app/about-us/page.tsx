@@ -1,9 +1,11 @@
-
-
-export default function AboutUs() {
+export default function About() {
   return (
     <div>
-        <h2>This is the about us page</h2>
+      <h1>About MyStore</h1>
+      <p>
+        MyStore is a modern e-commerce platform built with Next.js. We provide the best shopping
+        experience with speed, simplicity, and security.
+      </p>
     </div>
-  )
+  );
 }

@@ -1,25 +1,25 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import ProductCard from "./components/product-card/ProductCard";
+import styles from "./styles/home.module.css";
 
-export default function Home() {
+export default async function Home() {
+  const res = await fetch("https://fakestoreapi.com/products?limit=6");
+  const products = await res.json();
+
   return (
-    <div>
-      <h1>This is Home Page</h1>
-      <Image 
-        src={'/image1.jpg'}
-        alt="sample image"
-        width={300} height={300} 
-      />
-      <Image 
-        src={'/image1.jpg'}
-        alt="sample image"
-        width={300} height={300} 
-      />
-      <Image 
-        src={'/image1.jpg'}
-        alt="sample image"
-        width={300} height={300} 
-      />
+    <div className={styles.home}>
+      <section className={styles.hero}>
+        <h1>Welcome to MyStore</h1>
+        <p>Your one-stop destination for quality products</p>
+      </section>
+
+      <section className={styles.recommended}>
+        <h2>🛍️ Recommended Products</h2>
+        <div className={styles.grid}>
+          {products.map((p: any) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
