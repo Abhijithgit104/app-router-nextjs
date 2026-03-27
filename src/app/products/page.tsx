@@ -3,6 +3,8 @@ import { cookies, headers } from "next/headers";
 import { Suspense } from "react";
 import ProductList from "../components/ProductList";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Products List Page"
 };

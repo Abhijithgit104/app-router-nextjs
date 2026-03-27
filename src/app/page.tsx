@@ -2,29 +2,20 @@ import ProductCard from "./components/product-card/ProductCard";
 import styles from "./styles/home.module.css";
 import { ProductService } from "./services/products-services";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   let products = [];
   
   try {
-    // Attempting to fetch recommended products
-    // We can use ProductService but here it has a limit=6 parameter.
-    // I will use ProductService.getProducts() or just fetch with better error handling.
-    const res = await fetch("https://fakestoreapi.com/products?limit=6", { cache: "no-store" });
-    
-    if (res.ok) {
-        products = await res.json();
-    } else {
-        console.warn(`Home page: API returned status ${res.status}. Falling back to empty array.`);
+    // Standardizing by using ProductService for all fetching
+    // This allows centralized header management and error handling
+    const allProducts = await ProductService.getProducts();
+    if (allProducts && Array.isArray(allProducts)) {
+        products = allProducts.slice(0, 6);
     }
-
-    if (!Array.isArray(products)) {
-        console.warn("Home page: API did not return an array. Falling back.");
-        products = [];
-    }
-
   } catch (error) {
-    console.error("Home page: Failed to fetch products during pre-render:", error);
-    // Returning an empty page or fallback content instead of crashing the whole build
+    console.error("Home page: FAILED to fetch recommended products:", error);
     products = [];
   }
 
@@ -37,16 +28,19 @@ export default async function Home() {
 
       <section className={styles.recommended}>
         <h2>🛍️ Recommended Products</h2>
-        {products.length > 0 ? (
+        {products && products.length > 0 ? (
             <div className={styles.grid}>
             {products.map((p: any) => (
                 <ProductCard key={p.id} product={p} />
             ))}
             </div>
         ) : (
-            <p style={{ textAlign: 'center', opacity: 0.7 }}>
-                No recommended products available at the moment.
-            </p>
+            <div style={{ textAlign: 'center', margin: '40px 0' }}>
+               <p style={{ opacity: 0.7 }}>No recommended products available.</p>
+               <p style={{ fontSize: '0.9rem', color: '#888' }}>
+                   Check back later or explore the <strong>Products</strong> section.
+               </p>
+            </div>
         )}
       </section>
     </div>

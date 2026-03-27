@@ -3,13 +3,23 @@ import { ServiceBase } from "./service-base";
 export class ProductService extends ServiceBase {
     static getProducts = async () => {
         try {
-            const productResp = await fetch(this.getUrl('/products'), { cache: 'no-store' });
+            // Adding User-Agent and broader headers as some public APIs require them
+            const productResp = await fetch(this.getUrl('/products'), { 
+                cache: 'no-store',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Vercel Fetch)',
+                    'Accept': 'application/json'
+                }
+            });
+            
             if (!productResp.ok) {
-                console.error(`Fetch failed with status: ${productResp.status}`);
+                const errorText = await productResp.text();
+                console.error(`Fetch failed with status: ${productResp.status}. Body: ${errorText.slice(0, 100)}`);
                 return [];
             }
+            
             const products = await productResp.json();
-            return products;
+            return Array.isArray(products) ? products : [];
         } catch (error) {
             console.error("Error in getProducts service:", error);
             return [];
@@ -19,7 +29,9 @@ export class ProductService extends ServiceBase {
 
     static getProductById = async(id: number | string) => {
         try {
-            var productResp = await fetch(this.getUrl(`/products/${id}`));
+            var productResp = await fetch(this.getUrl(`/products/${id}`), {
+                headers: { 'User-Agent': 'Mozilla/5.0 (Vercel Fetch)' }
+            });
             if (!productResp.ok) {
                 console.error(`Fetch By ID failed with status: ${productResp.status}`);
                 return null;
@@ -34,7 +46,9 @@ export class ProductService extends ServiceBase {
 
     static getProductsByCategory = async (category: string) => {
         try {
-            const productResp = await fetch(this.getUrl(`/products/category/${category}`));
+            const productResp = await fetch(this.getUrl(`/products/category/${category}`), {
+                headers: { 'User-Agent': 'Mozilla/5.0 (Vercel Fetch)' }
+            });
             if (!productResp.ok) {
                 console.error(`Fetch Category failed with status: ${productResp.status}`);
                 return [];
