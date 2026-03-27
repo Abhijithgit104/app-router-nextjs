@@ -1,43 +1,48 @@
 import { Metadata } from "next";
-import ProductCard from "../components/product-card/ProductCard";
-import { ProductService } from "../services/products-services";
 import { cookies, headers } from "next/headers";
-import GotoCartButton from "../components/GotoCartButton";
-import Link from "next/link";
 import { Suspense } from "react";
 import ProductList from "../components/ProductList";
 
-async function getProducts() {
-  const productResp = await ProductService.getProducts();
-  return productResp;
-}
-
 export const metadata: Metadata = {
-  title:"Products List Page"
-}
+  title: "Products List Page"
+};
 
-export default async function products(props:any) {
-  const products = await getProducts();
+export default async function ProductsPage(props: any) {
+  // In Next.js 15, props.params and props.searchParams are promises.
+  // We await them even if not used, to follow conventions.
+  const params = await props.params;
+  const searchParams = await props.searchParams;
 
-  console.log("Products page executed", props);
-  const cookieList = await cookies();
-  const tokenCookie = cookieList.get('authToken');
-  console.log("token is :", tokenCookie, tokenCookie?.value);
+  console.log("Products list page accessed", { params, searchParams });
 
-  const headerList = await headers();
-  const referer = headerList.get('referer');
-  console.log("Referer is :", referer);
-  console.log("User-Agent",headerList.get('user-Agent'));
-  console.log("Host",headerList.get('Host'));
+  // Safe access to cookies and headers
+  try {
+      const cookieList = await cookies();
+      const tokenCookie = cookieList.get('authToken');
+      if (tokenCookie) {
+          console.log("Token present:", tokenCookie.value);
+      }
+
+      const headerList = await headers();
+      const referer = headerList.get('referer');
+      const userAgent = headerList.get('user-agent');
+      const host = headerList.get('host');
+
+      console.log("Request context:", { referer, userAgent, host });
+  } catch (e) {
+      console.error("Failed to read context (cookies/headers):", e);
+  }
 
   return (
     <div>
-      <h1 style={{textAlign:'center'}}>Products List</h1>
-      <Suspense fallback={<span style={{color: 'red'}}>Loading...</span>}>
+      <h1 style={{ textAlign: 'center', margin: '20px 0' }}>Our Products</h1>
+      <Suspense fallback={
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+              <span style={{ color: '#0070f3', fontWeight: 'bold' }}>Loading product list...</span>
+          </div>
+      }>
         <ProductList />
       </Suspense>
-      
-      
     </div>
   );
 }

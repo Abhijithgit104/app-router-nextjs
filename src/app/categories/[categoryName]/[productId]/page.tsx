@@ -1,28 +1,34 @@
 import ProductCard from "@/app/components/product-card/ProductCard";
 import { ProductService } from "@/app/services/products-services";
 
-export default async function CategoryProduct(props: any) {
-  console.log("params", props);
+interface CategoryProductProps {
+  params: Promise<{ categoryName: string; productId: string }>;
+}
 
-  const myParams = props.params;
-  const categoryName = decodeURIComponent(props.params.categoryName);
-  const productId = myParams.productId;
-  var productList;
+export default async function CategoryProduct({ params }: CategoryProductProps) {
+  const { categoryName, productId } = await params;
+  const decodedCategory = decodeURIComponent(categoryName);
+  
+  let productList = [];
 
-  if (categoryName) {
-    productList = await ProductService.getProductsByCategory(categoryName);
+  if (decodedCategory) {
+    productList = await ProductService.getProductsByCategory(decodedCategory);
   }
 
   return (
     <div>
-      category : {categoryName} <br />
-      categoryProduct: ProductId : {productId}
+      <div>Category: {decodedCategory}</div>
+      <div>ProductId: {productId}</div>
       <br />
-      <h3>{categoryName} Products</h3>
+      <h3>{decodedCategory} Products</h3>
       <div className="d-flex flex-wrap gap-2">
-        {productList.map((p: any) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+        {productList && productList.length > 0 ? (
+          productList.map((p: any) => (
+            <ProductCard key={p.id} product={p} />
+          ))
+        ) : (
+          <p>No products found in this category.</p>
+        )}
       </div>
     </div>
   );

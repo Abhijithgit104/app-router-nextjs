@@ -1,18 +1,25 @@
 import ProductCard from "./product-card/ProductCard";
 import styles from "../styles/product.module.css";
-
- export async function getProducts() {
-  const res = await fetch("https://fakestoreapi.com/products", { cache: "no-store" });
-  return res.json();
-}
+import { ProductService } from "../services/products-services";
 
 export default async function ProductList() {
-  const products = await getProducts();
-  return (
-    <div className={styles.container}>
-      {products.map((p: any) => (
-        <ProductCard key={p.id} product={p} />
-      ))}
-    </div>
-  );
+  try {
+    const products = await ProductService.getProducts();
+    
+    if (!Array.isArray(products)) {
+        console.error("Expected array from getProducts, got:", products);
+        return <p>Error: Invalid product data received.</p>;
+    }
+
+    return (
+      <div className={styles.container}>
+        {products.map((p: any) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error("Error fetching products in ProductList:", error);
+    return <p>Error loading products. Please try again later.</p>;
+  }
 }

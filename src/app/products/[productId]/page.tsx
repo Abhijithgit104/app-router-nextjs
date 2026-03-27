@@ -1,26 +1,31 @@
 import { ProductService } from '@/app/services/products-services';
-import type { Metadata, ResolvingMetadata } from 'next';
-import { title } from 'process';
+import type { Metadata } from 'next';
 import styles from "../../styles/product.module.css"
 import React from 'react'
 import GotoCartButton from '@/app/components/GotoCartButton';
 
-export async function generateMetadata(props: any) {
-  console.log("generateMetadata: ", props);
-  const productId = props.params.productId;
-  var product;
-  if(productId) {
-    product = await ProductService.getProductById(productId);
-    return {
-      title: product.title
+interface ProductDetailsProps {
+  params: Promise<{ productId: string }>;
+}
+
+export async function generateMetadata({ params }: ProductDetailsProps): Promise<Metadata> {
+  const { productId } = await params;
+  
+  if (productId) {
+    const product = await ProductService.getProductById(productId);
+    if (product) {
+        return {
+          title: product.title
+        };
     }
   }
   return {
     title: "Product Detail Page"
-  }
+  };
 }
-export default async function ProductDetails(props:any){
-    const productId = props.params.productId;
+
+export default async function ProductDetails({ params }: ProductDetailsProps) {
+  const { productId } = await params;
   let product = null;
 
   if (productId) {
@@ -29,11 +34,11 @@ export default async function ProductDetails(props:any){
 
   // Show loader or fallback if product not found
   if (!product) {
-    return <p>Loading product...</p>;
+    return <p>Product not found.</p>;
   }
 
-    return(
-         <div className={styles.detail}>
+  return (
+    <div className={styles.detail}>
       <img src={product.image} alt={product.title} width={250} />
       <div>
         <h2>{product.title}</h2>
@@ -42,5 +47,5 @@ export default async function ProductDetails(props:any){
         <GotoCartButton product={product} />
       </div>
     </div>
-    )
+  );
 }
